@@ -29,7 +29,6 @@
             android:id="@+id/editDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2016.07.07 "
             android:textIsSelectable="true" />
     </LinearLayout>
 
@@ -48,7 +47,6 @@
             android:id="@+id/editMoney"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="30000"
             android:inputType="numberDecimal"
             android:textIsSelectable="true" />
 
@@ -76,7 +74,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
-            android:text="1412.5"
             android:textIsSelectable="true" />
 
         <TextView
@@ -101,7 +98,6 @@
             android:id="@+id/editGas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="22"
             android:textIsSelectable="true" />
 
         <TextView
@@ -127,7 +123,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
-            android:text="23,456.12"
             android:textIsSelectable="true" />
 
         <TextView

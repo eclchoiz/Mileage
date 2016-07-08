@@ -25,7 +25,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     static private final String LOG_TAG = "MainActivity";
 
-    MileageDTO dto;
+    MileageDTO dto = new MileageDTO();
 
     EditText editDate;
     EditText editDistance;
@@ -71,13 +71,18 @@ public class MainActivity extends AppCompatActivity {
         textMileage = (TextView) findViewById(R.id.textMileage);
         textCount = (TextView) findViewById(R.id.textCount);
 
+
+        // 날짜 항목에 오늘 날짜 넣기기
         editDate.setText(new Date().toString());
+
+/*      다른 메소드로 뺄 부분. calPrice
+        // 주유금액과 리터당 금액으로 주유량 계산후 출력.
         float money = Float.parseFloat(editMoney.getText().toString());
         float liter = Float.parseFloat(editLitre.getText().toString());
         float gas = money / liter;
-        gas=Math.round(gas*100f)/100f;
-        Log.d("GAS : " , gas+"" );
-        editLitre.setText(gas+"");
+        gas = Math.round(gas * 100f) / 100f;
+        editGas.setText(Float.toString(gas));
+*/
 
 
     }
@@ -150,15 +155,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (date != null && money != null && litre != null && gas != null && distance != null) {
-            dto = new MileageDTO();
+
             dto.setDate(date);
             dto.setDistance(distance);
             dto.setGas(gas);
             dto.setLitre(litre);
             dto.setMoney(money);
 
-            Log.d(LOG_TAG, " - DTO : " + dto.toString() + " :: date : " + date + ", money : " + money + ", litre : "
-                    + litre + ", gas : " + gas + ", distance : " + distance);
+//            Log.d(LOG_TAG, " - DTO : " + dto.toString() + " :: date : " + date + ", money : " + money + ", litre : "
+//                    + litre + ", gas : " + gas + ", distance : " + distance);
 
             return true;
         } else {
@@ -174,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 입력된 데이터에 이상이 있을시 재입력 요구하는 메시지 출력
     public void sendMessage() {
-
+        Toast.makeText(this, "누락된 항목이 있습니다. 다시 한번 확인해주십시요.",Toast.LENGTH_SHORT).show();
     }
 
     @Override
