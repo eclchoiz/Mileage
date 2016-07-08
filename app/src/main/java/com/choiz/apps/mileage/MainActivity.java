@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +17,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
+    static private final String LOG_TAG = "MainActivity";
+
+    MileageDTO dto;
 
     EditText editDate;
     EditText editDistance;
@@ -62,9 +70,19 @@ public class MainActivity extends AppCompatActivity {
         textMileage = (TextView) findViewById(R.id.textMileage);
         textCount = (TextView) findViewById(R.id.textCount);
 
+        editDate.setText(new Date().toString());
+
+
     }
 
     public void onButtonSaveClicked(View view) {
+
+        // 저장 버튼이 눌리면 입력된 데이터 문제가 있는지 확인하고 데이터를 저장하거나 재입력을 요구한다.
+        if (isValidData()) {
+            saveData();
+        } else {
+            sendMessage();
+        }
 
         summary.setVisibility(View.VISIBLE);
 
@@ -93,6 +111,63 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();    // 알림창 객체 생성
         dialog.show();    // 알림창 띄우기
+    }
+
+    // 입력된 데이터 검증
+    public boolean isValidData() {
+        String date;
+        String money;
+        String litre;
+        String gas;
+        String distance;
+
+        date = editDate.getText().toString();
+        money = editMoney.getText().toString();
+        litre = editLitre.getText().toString();
+        gas = editGas.getText().toString();
+        distance = editDistance.getText().toString();
+
+//        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        Date convDate = null;
+//        try {
+//            convDate = transFormat.parse(date);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Log.d("convDate", convDate.toString());
+//
+//
+//        Log.d(LOG_TAG, " :: date : " + date + ", money : " + money + ", litre : "
+//                + litre + ", gas : " + gas + ", distance : " + distance);
+
+
+        if (date != null && money != null && litre != null && gas != null && distance != null) {
+            dto = new MileageDTO();
+            dto.setDate(date);
+            dto.setDistance(distance);
+            dto.setGas(gas);
+            dto.setLitre(litre);
+            dto.setMoney(money);
+
+            Log.d(LOG_TAG, " - DTO : " + dto.toString() + " :: date : " + date + ", money : " + money + ", litre : "
+                    + litre + ", gas : " + gas + ", distance : " + distance);
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // 데이터 검증후 이상없으면 디비에 저장
+    public void saveData() {
+
+    }
+
+
+    // 입력된 데이터에 이상이 있을시 재입력 요구하는 메시지 출력
+    public void sendMessage() {
+
     }
 
     @Override
