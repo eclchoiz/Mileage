@@ -101,7 +101,6 @@
             android:id="@+id/editGas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
             android:text="22"
             android:textIsSelectable="true" />
 

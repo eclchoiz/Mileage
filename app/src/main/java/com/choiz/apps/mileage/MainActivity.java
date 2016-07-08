@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
         textCount = (TextView) findViewById(R.id.textCount);
 
         editDate.setText(new Date().toString());
+        float money = Float.parseFloat(editMoney.getText().toString());
+        float liter = Float.parseFloat(editLitre.getText().toString());
+        float gas = money / liter;
+        gas=Math.round(gas*100f)/100f;
+        Log.d("GAS : " , gas+"" );
+        editLitre.setText(gas+"");
 
 
     }
