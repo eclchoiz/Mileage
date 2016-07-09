@@ -17,9 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,24 +24,22 @@ public class MainActivity extends AppCompatActivity {
 
     MileageDTO dto = new MileageDTO();
 
-    EditText editDate;
-    EditText editDistance;
-    EditText editMoney;
-    EditText editGas;
-    EditText editLitre;
-    Button buttonSave;
-    Button buttonReset;
-    TextView textStartDate;
-    TextView textTotalDistance;
-    TextView textTotalGas;
-    TextView textMileage;
-    TextView textCount;
     LinearLayout summary;
+    Button buttonSave, buttonReset;
+    EditText editDate, editDistance, editMoney, editGas, editPrice;
+    TextView textStartDate, textTotalDistance, textTotalGas, textMileage, textCount;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setUp();
+    }
+
+    private void setUp() {
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -62,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         editDistance = (EditText) findViewById(R.id.editDistance);
         editMoney = (EditText) findViewById(R.id.editMoney);
         editGas = (EditText) findViewById(R.id.editGas);
-        editLitre = (EditText) findViewById(R.id.editLitre);
+        editPrice = (EditText) findViewById(R.id.editPrice);
         buttonSave = (Button) findViewById(R.id.buttonSave);
         buttonReset = (Button) findViewById(R.id.buttonReset);
         textStartDate = (TextView) findViewById(R.id.textStartDate);
@@ -71,20 +66,17 @@ public class MainActivity extends AppCompatActivity {
         textMileage = (TextView) findViewById(R.id.textMileage);
         textCount = (TextView) findViewById(R.id.textCount);
 
-
         // 날짜 항목에 오늘 날짜 넣기기
         editDate.setText(new Date().toString());
 
 /*      다른 메소드로 뺄 부분. calPrice
         // 주유금액과 리터당 금액으로 주유량 계산후 출력.
         float money = Float.parseFloat(editMoney.getText().toString());
-        float liter = Float.parseFloat(editLitre.getText().toString());
+        float liter = Float.parseFloat(editPrice.getText().toString());
         float gas = money / liter;
         gas = Math.round(gas * 100f) / 100f;
         editGas.setText(Float.toString(gas));
 */
-
-
     }
 
     public void onButtonSaveClicked(View view) {
@@ -95,9 +87,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             sendMessage();
         }
-
-        summary.setVisibility(View.VISIBLE);
-
     }
 
     public void onButtonResetClicked(View view) {
@@ -129,13 +118,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean isValidData() {
         String date;
         String money;
-        String litre;
+        String price;
         String gas;
         String distance;
 
         date = editDate.getText().toString();
         money = editMoney.getText().toString();
-        litre = editLitre.getText().toString();
+        price = editPrice.getText().toString();
         gas = editGas.getText().toString();
         distance = editDistance.getText().toString();
 
@@ -150,20 +139,20 @@ public class MainActivity extends AppCompatActivity {
 //        Log.d("convDate", convDate.toString());
 //
 //
-//        Log.d(LOG_TAG, " :: date : " + date + ", money : " + money + ", litre : "
-//                + litre + ", gas : " + gas + ", distance : " + distance);
+//        Log.d(LOG_TAG, " :: date : " + date + ", money : " + money + ", price : "
+//                + price + ", gas : " + gas + ", distance : " + distance);
 
 
-        if (date != null && money != null && litre != null && gas != null && distance != null) {
+        if (date != null && money != null && price != null && gas != null && distance != null) {
 
             dto.setDate(date);
             dto.setDistance(distance);
             dto.setGas(gas);
-            dto.setLitre(litre);
+            dto.setPrice(price);
             dto.setMoney(money);
 
-//            Log.d(LOG_TAG, " - DTO : " + dto.toString() + " :: date : " + date + ", money : " + money + ", litre : "
-//                    + litre + ", gas : " + gas + ", distance : " + distance);
+//            Log.d(LOG_TAG, " - DTO : " + dto.toString() + " :: date : " + date + ", money : " + money + ", price : "
+//                    + price + ", gas : " + gas + ", distance : " + distance);
 
             return true;
         } else {
@@ -179,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 입력된 데이터에 이상이 있을시 재입력 요구하는 메시지 출력
     public void sendMessage() {
-        Toast.makeText(this, "누락된 항목이 있습니다. 다시 한번 확인해주십시요.",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "누락된 항목이 있습니다. 다시 한번 확인해주십시요.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
