@@ -9,15 +9,20 @@ import android.util.Log;
  */
 public class MileageDAO {
 
-   /* private final static String DB_NAME = "mileage.db";
-    private final static String TABLE_NAME = "mil_table";
-    private final static String LOG_TAG = "MileageDAO";
+    public void createDB() {
 
-    SQLiteDatabase db;
+    }
 
-    private void createDataBase(String name) {
-        Log.d(LOG_TAG, "Creating DB [" + name + "].");
+    public void insert(MileageDTO dto) {
 
-        db = SQLiteDatabase.openOrCreateDatabase(name, MODE_WORLD_WRITEABLE,null);
-    }*/
+    }
+
+    public void update(int index){
+
+    }
+
+    public void delete(int index){
+
+    }
+
 }

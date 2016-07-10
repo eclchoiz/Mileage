@@ -7,6 +7,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -17,30 +19,31 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     static private final String LOG_TAG = "MainActivity";
 
-    MileageDTO dto = new MileageDTO();
-
-    LinearLayout summary;
-    Button buttonSave, buttonReset;
-    EditText editDate, editDistance, editMoney, editGas, editPrice;
-    TextView textStartDate, textTotalDistance, textTotalGas, textMileage, textCount;
-
+    MileageDTO mDto = new MileageDTO();
+    String mToday = "";
+    Button mButtonSave, mButtonReset;
+    EditText mEditDate, mEditDistance, mEditMoney, mEditGas, mEditPrice;
+    TextView mTextStartDate, mTextTotalDistance, mTextTotalGas, mTextMileage, mTextCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setUp();
+        init();
+        setListener();
     }
 
-    private void setUp() {
+    private void init() {
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -50,33 +53,73 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
+        });*/
+
+        mEditDate = (EditText) findViewById(R.id.editDate);
+        mEditDistance = (EditText) findViewById(R.id.editDistance);
+        mEditMoney = (EditText) findViewById(R.id.editMoney);
+        mEditGas = (EditText) findViewById(R.id.editGas);
+        mEditPrice = (EditText) findViewById(R.id.editPrice);
+        mButtonSave = (Button) findViewById(R.id.buttonSave);
+        mButtonReset = (Button) findViewById(R.id.buttonReset);
+        mTextStartDate = (TextView) findViewById(R.id.textStartDate);
+        mTextTotalDistance = (TextView) findViewById(R.id.textTotalDistance);
+        mTextTotalGas = (TextView) findViewById(R.id.textTotalGas);
+        mTextMileage = (TextView) findViewById(R.id.textMileage);
+        mTextCount = (TextView) findViewById(R.id.textCount);
+
+        // 날짜 항목에 오늘 날짜 넣기
+        mEditDate.setText(getToday());
+    }
+
+
+    public void setListener() {
+
+        // 주유금액과 단가로 주유량 계산해서 표시하기
+        mEditPrice.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                float money = 0f;
+                float price = 0f;
+                String strMoney = mEditMoney.getText().toString();
+                String strPrice = mEditPrice.getText().toString();
+
+                if (strMoney.length() > 0) {
+                    money = Float.parseFloat(strMoney);
+                }
+
+                if (strPrice.length() > 0) {
+                    price = Float.parseFloat(strPrice);
+                }
+
+                // 소수점 두자리에서 반올림
+                if (price > 0) {
+                    float gas = Math.round((money / price) * 100f) / 100f;
+                    mEditGas.setText(Float.toString(gas));
+                }
+            }
         });
+    }
 
-        summary = (LinearLayout) findViewById(R.id.summary);
-        editDate = (EditText) findViewById(R.id.editDate);
-        editDistance = (EditText) findViewById(R.id.editDistance);
-        editMoney = (EditText) findViewById(R.id.editMoney);
-        editGas = (EditText) findViewById(R.id.editGas);
-        editPrice = (EditText) findViewById(R.id.editPrice);
-        buttonSave = (Button) findViewById(R.id.buttonSave);
-        buttonReset = (Button) findViewById(R.id.buttonReset);
-        textStartDate = (TextView) findViewById(R.id.textStartDate);
-        textTotalDistance = (TextView) findViewById(R.id.textTotalDistance);
-        textTotalGas = (TextView) findViewById(R.id.textTotalGas);
-        textMileage = (TextView) findViewById(R.id.textMileage);
-        textCount = (TextView) findViewById(R.id.textCount);
+    public String getToday() {
+        Date today = new Date();
+        mToday = today.toString();
 
-        // 날짜 항목에 오늘 날짜 넣기기
-        editDate.setText(new Date().toString());
+        return dateToStr(today);
+    }
 
-/*      다른 메소드로 뺄 부분. calPrice
-        // 주유금액과 리터당 금액으로 주유량 계산후 출력.
-        float money = Float.parseFloat(editMoney.getText().toString());
-        float liter = Float.parseFloat(editPrice.getText().toString());
-        float gas = money / liter;
-        gas = Math.round(gas * 100f) / 100f;
-        editGas.setText(Float.toString(gas));
-*/
+    public String dateToStr(Date date) {
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy년 M월 dd일 E요일", Locale.KOREAN);
+        return transFormat.format(date);
     }
 
     public void onButtonSaveClicked(View view) {
@@ -89,10 +132,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onDateClicked(View view) {
+
+    }
+
     public void onButtonResetClicked(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        // 여기서 부터는 알림창의 속성 설정
+        // 알림창의 속성 설정
         builder.setTitle("데이터 초기화 설정")        // 제목 설정
                 .setMessage("데이터를 초기화 하시겠습니까?")        // 메세지 설정
                 .setCancelable(false)        // 뒤로 버튼 클릭시 취소 가능 설정
@@ -100,13 +147,13 @@ public class MainActivity extends AppCompatActivity {
                     // 확인 버튼 클릭시 설정
                     public void onClick(DialogInterface dialog, int whichButton) {
                         Toast.makeText(getApplicationContext(), "데이터가 초기화 되었습니다.", Toast.LENGTH_SHORT).show();
-
                     }
                 })
                 .setNegativeButton("취소", new DialogInterface.OnClickListener() {
                     // 취소 버튼 클릭시 설정
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dialog.cancel();
+                        Toast.makeText(getApplicationContext(), "초기화가 취소 되었습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -122,37 +169,20 @@ public class MainActivity extends AppCompatActivity {
         String gas;
         String distance;
 
-        date = editDate.getText().toString();
-        money = editMoney.getText().toString();
-        price = editPrice.getText().toString();
-        gas = editGas.getText().toString();
-        distance = editDistance.getText().toString();
+        date = mEditDate.getText().toString();
+        money = mEditMoney.getText().toString();
+        price = mEditPrice.getText().toString();
+        gas = mEditGas.getText().toString();
+        distance = mEditDistance.getText().toString();
 
-//        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        Date convDate = null;
-//        try {
-//            convDate = transFormat.parse(date);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Log.d("convDate", convDate.toString());
-//
-//
-//        Log.d(LOG_TAG, " :: date : " + date + ", money : " + money + ", price : "
-//                + price + ", gas : " + gas + ", distance : " + distance);
+        if (date.length() != 0 && money.length() != 0 && price.length() != 0
+                && gas.length() != 0 && distance.length() != 0) {
 
-
-        if (date != null && money != null && price != null && gas != null && distance != null) {
-
-            dto.setDate(date);
-            dto.setDistance(distance);
-            dto.setGas(gas);
-            dto.setPrice(price);
-            dto.setMoney(money);
-
-//            Log.d(LOG_TAG, " - DTO : " + dto.toString() + " :: date : " + date + ", money : " + money + ", price : "
-//                    + price + ", gas : " + gas + ", distance : " + distance);
+            mDto.setDate(mToday);
+            mDto.setDistance(distance);
+            mDto.setGas(gas);
+            mDto.setPrice(price);
+            mDto.setMoney(money);
 
             return true;
         } else {
