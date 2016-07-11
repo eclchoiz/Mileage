@@ -13,6 +13,17 @@ public class MileageDTO {
     private String gas;
     private String distance;
 
+    public MileageDTO() {
+    }
+
+    public MileageDTO(String date, String money, String price, String gas, String distance) {
+        this.date = date;
+        this.money = money;
+        this.price = price;
+        this.gas = gas;
+        this.distance = distance;
+    }
+
     public String getDate() {
         return date;
     }
@@ -58,7 +69,7 @@ public class MileageDTO {
         return "MileageDTO{" +
                 "date=" + date +
                 ", money='" + money + '\'' +
-                ", litre='" + price + '\'' +
+                ", price='" + price + '\'' +
                 ", gas='" + gas + '\'' +
                 ", distance='" + distance + '\'' +
                 '}';

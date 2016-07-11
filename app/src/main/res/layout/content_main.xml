@@ -32,7 +32,6 @@
             android:textIsSelectable="false"
             android:minWidth="150dp"
             android:onClick="onDateClicked"
-            android:editable="true"
             android:inputType="date" />
     </LinearLayout>
 
@@ -193,7 +192,6 @@
                 android:id="@+id/textStartDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2016.06.06"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
 
@@ -211,7 +209,6 @@
                 android:id="@+id/textTotalDistance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="9999"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
@@ -234,7 +231,6 @@
                 android:id="@+id/textTotalGas"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="354.23"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
@@ -257,7 +253,6 @@
                 android:id="@+id/textMileage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="12.45"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
@@ -280,7 +275,6 @@
                 android:id="@+id/textCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="32"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView

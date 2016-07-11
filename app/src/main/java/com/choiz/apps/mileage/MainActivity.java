@@ -1,9 +1,11 @@
 package com.choiz.apps.mileage;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,19 +17,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     static private final String LOG_TAG = "MainActivity";
 
+    MileageDbHelper mDbHelper;
+
     MileageDTO mDto = new MileageDTO();
-    String mToday = "";
+    String mToday;
     Button mButtonSave, mButtonReset;
     EditText mEditDate, mEditDistance, mEditMoney, mEditGas, mEditPrice;
     TextView mTextStartDate, mTextTotalDistance, mTextTotalGas, mTextMileage, mTextCount;
@@ -37,16 +42,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mDbHelper = new MileageDbHelper(this);
+
         init();
         setListener();
+        getSummary();
     }
 
     private void init() {
 
-        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+      /*  FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                float money = 0f;
-                float price = 0f;
+                float money = 0.0f;
+                float price = 0.0f;
                 String strMoney = mEditMoney.getText().toString();
                 String strPrice = mEditPrice.getText().toString();
 
@@ -119,7 +127,71 @@ public class MainActivity extends AppCompatActivity {
 
     public String dateToStr(Date date) {
         SimpleDateFormat transFormat = new SimpleDateFormat("yyyy년 M월 dd일 E요일", Locale.KOREAN);
+
         return transFormat.format(date);
+    }
+
+    public void getSummary(){
+
+        ArrayList<MileageDTO> array = new ArrayList<>();
+        MileageDTO dto;
+        int totalMoney = 0;
+        double avgPrice = 0d;
+        double totalGas = 0d;
+        int oldestDistance = 0;
+        int newestDistance = 0;
+        int distance = 0;
+
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        mDbHelper.onCreate(db);
+
+        Cursor cursor = db.query(MileageDbHelper.MileageEntry.TABLE_NAME, null, null, null, null, null, null);
+
+        while (cursor.moveToNext()){
+            dto = new MileageDTO(
+                    cursor.getString(cursor.getColumnIndex(MileageDbHelper.MileageEntry.COLUMN_NAME_DATE)),
+                    cursor.getString(cursor.getColumnIndex(MileageDbHelper.MileageEntry.COLUMN_NAME_MONEY)),
+                    cursor.getString(cursor.getColumnIndex(MileageDbHelper.MileageEntry.COLUMN_NAME_PRICE)),
+                    cursor.getString(cursor.getColumnIndex(MileageDbHelper.MileageEntry.COLUMN_NAME_GAS)),
+                    cursor.getString(cursor.getColumnIndex(MileageDbHelper.MileageEntry.COLUMN_NAME_DISTANCE))
+            );
+
+            Log.d("savedDTO", dto.toString());
+
+            array.add(dto);
+            totalMoney += Integer.parseInt(cursor.getString(cursor.getColumnIndex(MileageDbHelper.MileageEntry.COLUMN_NAME_MONEY)));
+//            totalDistance += Integer.parseInt(cursor.getString(cursor.getColumnIndex(MileageDbHelper.MileageEntry.COLUMN_NAME_DISTANCE)));
+            totalGas += Double.parseDouble(cursor.getString(cursor.getColumnIndex(MileageDbHelper.MileageEntry.COLUMN_NAME_GAS)));
+
+//            Log.d("variables",totalMoney+", "+totalDistance+", "+totalGas);
+        }
+
+        if (array.size() ==0){
+            cursor.close();
+            return;
+        }
+
+//        Math.round((money / price) * 100f) / 100f
+        oldestDistance = Integer.parseInt(array.get(0).getDistance());
+        newestDistance = Integer.parseInt(array.get(array.size()-1).getDistance());
+        distance = newestDistance-oldestDistance;
+
+        // 연비 계산 법 = (최종 주행거리 - 최초주행거리) / 총 주유량
+        double mileage = Math.round((distance / totalGas)*100d)/100d;
+        mTextMileage.setText(Double.toString(mileage));
+
+        // 주행거리 계산 수정할것.
+//        mTextTotalDistance.setText(Integer.toString(totalDistance));
+        mTextTotalDistance.setText(Integer.toString(distance));
+
+        mTextTotalGas.setText(Double.toString(Math.round(totalGas*100d)/100d));
+        mTextCount.setText(Integer.toString(array.size()));
+        // 시작 날짜 표시
+//        Date date=(Date)(array.get(0).getDate());
+//        mTextStartDate.setText(dateToStr(date));
+
+        cursor.close();
+
     }
 
     public void onButtonSaveClicked(View view) {
@@ -127,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
         // 저장 버튼이 눌리면 입력된 데이터 문제가 있는지 확인하고 데이터를 저장하거나 재입력을 요구한다.
         if (isValidData()) {
             saveData();
+            getSummary();
         } else {
             sendMessage();
         }
@@ -136,7 +209,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void dropTable(){
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        String sql = "drop table " + MileageDbHelper.MileageEntry.TABLE_NAME;
+        db.execSQL(sql);
+        getSummary();
+    }
+
     public void onButtonResetClicked(View view) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         // 알림창의 속성 설정
@@ -146,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("초기화", new DialogInterface.OnClickListener() {
                     // 확인 버튼 클릭시 설정
                     public void onClick(DialogInterface dialog, int whichButton) {
+                        dropTable();
                         Toast.makeText(getApplicationContext(), "데이터가 초기화 되었습니다.", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -193,12 +276,37 @@ public class MainActivity extends AppCompatActivity {
     // 데이터 검증후 이상없으면 디비에 저장
     public void saveData() {
 
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(MileageDbHelper.MileageEntry.COLUMN_NAME_DATE, mDto.getDate());
+        values.put(MileageDbHelper.MileageEntry.COLUMN_NAME_DISTANCE, mDto.getDistance());
+        values.put(MileageDbHelper.MileageEntry.COLUMN_NAME_GAS, mDto.getGas());
+        values.put(MileageDbHelper.MileageEntry.COLUMN_NAME_PRICE, mDto.getPrice());
+        values.put(MileageDbHelper.MileageEntry.COLUMN_NAME_MONEY, mDto.getMoney());
+
+        long newRowId;
+        newRowId = db.insert(
+                MileageDbHelper.MileageEntry.TABLE_NAME,
+                null,
+                values
+        );
+        Log.d("saveData", Long.toString(newRowId));
+
+        db.close();
+
     }
 
 
     // 입력된 데이터에 이상이 있을시 재입력 요구하는 메시지 출력
     public void sendMessage() {
         Toast.makeText(this, "누락된 항목이 있습니다. 다시 한번 확인해주십시요.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDbHelper.close();
+        super.onDestroy();
     }
 
     @Override
