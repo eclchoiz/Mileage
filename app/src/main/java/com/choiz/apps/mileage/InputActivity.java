@@ -26,15 +26,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class InputActivity extends AppCompatActivity {
     static private final String LOG_TAG = "";
 
     MileageDbHelper mDbHelper;
 
     MileageDTO mDto = new MileageDTO();
-//    String mToday;
-//    Button mButtonSave, mButtonReset;
-//    EditText mEditDate, mEditDistance, mEditMoney, mEditGas, mEditPrice;
+    String mToday;
+    Button mButtonSave, mButtonReset;
+    EditText mEditDate, mEditDistance, mEditMoney, mEditGas, mEditPrice;
     TextView mTextStartDate, mTextTotalDistance, mTextTotalGas, mTextMileage, mTextCount;
 
     @Override
@@ -63,13 +63,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-//        mEditDate = (EditText) findViewById(R.id.editDate);
-//        mEditDistance = (EditText) findViewById(R.id.editDistance);
-//        mEditMoney = (EditText) findViewById(R.id.editMoney);
-//        mEditGas = (EditText) findViewById(R.id.editGas);
-//        mEditPrice = (EditText) findViewById(R.id.editPrice);
-//        mButtonSave = (Button) findViewById(R.id.buttonSave);
-//        mButtonReset = (Button) findViewById(R.id.buttonReset);
+        mEditDate = (EditText) findViewById(R.id.editDate);
+        mEditDistance = (EditText) findViewById(R.id.editDistance);
+        mEditMoney = (EditText) findViewById(R.id.editMoney);
+        mEditGas = (EditText) findViewById(R.id.editGas);
+        mEditPrice = (EditText) findViewById(R.id.editPrice);
+        mButtonSave = (Button) findViewById(R.id.buttonSave);
+        mButtonReset = (Button) findViewById(R.id.buttonReset);
         mTextStartDate = (TextView) findViewById(R.id.textStartDate);
         mTextTotalDistance = (TextView) findViewById(R.id.textTotalDistance);
         mTextTotalGas = (TextView) findViewById(R.id.textTotalGas);
@@ -77,14 +77,14 @@ public class MainActivity extends AppCompatActivity {
         mTextCount = (TextView) findViewById(R.id.textCount);
 
         // 날짜 항목에 오늘 날짜 넣기
-//        mEditDate.setText(getToday());
+        mEditDate.setText(getToday());
     }
 
 
     public void setListener() {
 
         // 주유금액과 단가로 주유량 계산해서 표시하기
-     /*   mEditPrice.addTextChangedListener(new TextWatcher() {
+        mEditPrice.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -115,15 +115,15 @@ public class MainActivity extends AppCompatActivity {
                     mEditGas.setText(Float.toString(gas));
                 }
             }
-        });*/
+        });
     }
 
-   /* public String getToday() {
+    public String getToday() {
         Date today = new Date();
         mToday = today.toString();
 
         return dateToStr(today);
-    }*/
+    }
 
     public String dateToStr(Date date) {
         SimpleDateFormat transFormat = new SimpleDateFormat("yyyy년 M월 dd일 E요일", Locale.KOREAN);
@@ -196,18 +196,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void onButtonSaveClicked(View view) {
 
-      /*  // 저장 버튼이 눌리면 입력된 데이터 문제가 있는지 확인하고 데이터를 저장하거나 재입력을 요구한다.
+        // 저장 버튼이 눌리면 입력된 데이터 문제가 있는지 확인하고 데이터를 저장하거나 재입력을 요구한다.
         if (isValidData()) {
             saveData();
             getSummary();
         } else {
             sendMessage();
-        }*/
-    }
-
-    public void onNewDataButtonClicked (View view){
-        Intent intent = new Intent(getApplicationContext(), InputActivity.class);
-        startActivity(intent);
+        }
     }
 
     public void onDateClicked(View view) {
@@ -250,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 입력된 데이터 검증
-   /* public boolean isValidData() {
+    public boolean isValidData() {
         String date;
         String money;
         String price;
@@ -276,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return false;
         }
-    }*/
+    }
 
     // 데이터 검증후 이상없으면 디비에 저장
     public void saveData() {
